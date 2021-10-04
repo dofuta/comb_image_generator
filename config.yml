@@ -1,0 +1,14 @@
+max_result_num: 10000
+assets_path: "./assets"
+files:
+  items_base:
+    - "1_背景"
+    - "2_体色"
+    - "3_背びれ"
+    - "4_服"
+  items_deco:
+    - "5_目"
+    - "6_アイウェア"
+    - "7_帽子"
+    - "8_口"
+    - "9_靴"
