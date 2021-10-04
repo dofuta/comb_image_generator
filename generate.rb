@@ -46,7 +46,7 @@ end
 def createImage(combs)
 
   # プログレスバー
-  bar = TTY::ProgressBar.new("downloading [:bar]", total: (combs[:items_base].length + combs[:items_deco].length))
+  bar = TTY::ProgressBar.new("Generating [:bar]", total: (combs[:items_base].length + combs[:items_deco].length))
   base_image = MiniMagick::Image.open(combs[:items_base][0])
   combs[:items_base].drop(1).each do |item|
     base_image = stackImage(base_image, item)
