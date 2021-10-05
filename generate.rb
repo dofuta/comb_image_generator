@@ -1,13 +1,6 @@
-# image generator
-require "mini_magick"
-
-# config loading
-require 'yaml'
-
-# prompt displaying tool
-require 'tty-prompt'
-require 'tty-progressbar'
-require 'tty-table'
+# Require all gems
+require 'bundler'
+Bundler.require
 
 # Config file path
 CONFIG_FILE_PATH = "./config.yml"
