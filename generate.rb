@@ -24,14 +24,15 @@ def getRandCombs(combs)
     }
     results.push(result)
   end
+  results.shuffle!
   return results
 end
 
 def stackImage(base_image, file_name)
   result = base_image.composite(MiniMagick::Image.open(file_name)) do |config|
     config.compose 'Over'
-    config.gravity 'NorthWest'
-    config.geometry '+0+0'
+    # config.gravity 'NorthWest'
+    # config.geometry '+0+0'
   end
   return result
 end
