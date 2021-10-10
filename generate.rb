@@ -83,7 +83,7 @@ end
 items_deco = []
 CONFIG['files']['items_deco'].each_with_index do |dir, i|
   files = Dir.entries("#{CONFIG['assets_path']}/#{dir}").select { |f| File.file? File.join("#{CONFIG['assets_path']}/#{dir}", f) }
-  files = files.reject{|entry| entry.start_with?(/\./) }
+  files = files.select{|entry| entry.end_with?('.png') }
   files = files.map{|file| "#{CONFIG['assets_path']}/#{dir}/#{file}"}
   if (DEBUG)
     puts "DIR: #{dir}"
