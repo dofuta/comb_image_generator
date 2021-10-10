@@ -31,8 +31,8 @@ end
 def stackImage(base_image, file_name)
   result = base_image.composite(MiniMagick::Image.open(file_name)) do |config|
     config.compose 'Over'
-    # config.gravity 'NorthWest'
-    # config.geometry '+0+0'
+    config.gravity 'NorthWest'
+    config.geometry '+0+0'
   end
   return result
 end
@@ -68,7 +68,7 @@ items_base = []
 # Get file names for each dirs
 CONFIG['files']['items_base'].each_with_index do |dir, i|
   files = Dir.entries("#{CONFIG['assets_path']}/#{dir}").select { |f| File.file? File.join("#{CONFIG['assets_path']}/#{dir}", f) }
-  files = files.reject{|entry| entry == '.keep'}
+  files = files.reject{|entry| entry.start_with?(/\./) }
   files = files.map{|file| "#{CONFIG['assets_path']}/#{dir}/#{file}"}
   if (DEBUG)
     puts "DIR: #{dir}"
@@ -83,7 +83,7 @@ end
 items_deco = []
 CONFIG['files']['items_deco'].each_with_index do |dir, i|
   files = Dir.entries("#{CONFIG['assets_path']}/#{dir}").select { |f| File.file? File.join("#{CONFIG['assets_path']}/#{dir}", f) }
-  files = files.reject{|entry| entry == '.keep'}
+  files = files.reject{|entry| entry.start_with?(/\./) }
   files = files.map{|file| "#{CONFIG['assets_path']}/#{dir}/#{file}"}
   if (DEBUG)
     puts "DIR: #{dir}"
