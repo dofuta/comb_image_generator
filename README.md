@@ -54,6 +54,6 @@ files:
 ## Run the program
 1. Just run:
 ```
-bundle exec ruby gen
+bundle exec ruby generate.rb
 ```
 Then, you can see the result generated images at result/ directory.
