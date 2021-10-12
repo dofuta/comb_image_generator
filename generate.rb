@@ -38,7 +38,6 @@ def stackImage(base_image, file_name)
 end
 
 def createImage(combs)
-
   # プログレスバー
   bar = TTY::ProgressBar.new("Generating [:bar]", total: (combs[:items_base].length + combs[:items_deco].length))
   base_image = MiniMagick::Image.open(combs[:items_base][0])
@@ -53,59 +52,51 @@ def createImage(combs)
   return base_image
 end
 
-
-# Get YAML data
-if File.exists? (CONFIG_FILE_PATH)
-  CONFIG          = YAML.load_file(CONFIG_FILE_PATH)
-else
-  return nil
-end
-
-if (DEBUG)
-  puts "The base item list is the followings:"
-end
-items_base = []
-# Get file names for each dirs
-CONFIG['files']['items_base'].each_with_index do |dir, i|
-  files = Dir.entries("#{CONFIG['assets_path']}/#{dir}").select { |f| File.file? File.join("#{CONFIG['assets_path']}/#{dir}", f) }
-  files = files.reject{|entry| entry.start_with?(/\./) }
-  files = files.map{|file| "#{CONFIG['assets_path']}/#{dir}/#{file}"}
+def getFileNames(items_category)
   if (DEBUG)
-    puts "DIR: #{dir}"
-    puts files
+    puts "The #{items_category} list is the followings:"
   end
-  items_base[i] = files
-end
-
-if (DEBUG)
-  puts "The deco item list is the followings:"
-end
-items_deco = []
-CONFIG['files']['items_deco'].each_with_index do |dir, i|
-  files = Dir.entries("#{CONFIG['assets_path']}/#{dir}").select { |f| File.file? File.join("#{CONFIG['assets_path']}/#{dir}", f) }
-  files = files.select{|entry| entry.end_with?('.png') }
-  files = files.map{|file| "#{CONFIG['assets_path']}/#{dir}/#{file}"}
-  if (DEBUG)
-    puts "DIR: #{dir}"
-    puts files
+  items = []
+  # Get file names for each dirs
+  CONFIG['files'][items_category].each_with_index do |dir, i|
+    files = Dir.entries("#{CONFIG['assets_path']}/#{dir}").select { |f| File.file? File.join("#{CONFIG['assets_path']}/#{dir}", f) }
+    files = files.reject{|entry| entry.start_with?(/\./) }
+    files = files.map{|file| "#{CONFIG['assets_path']}/#{dir}/#{file}"}
+    if (DEBUG)
+      puts "DIR: #{dir}"
+      puts files
+    end
+    items[i] = files
   end
-  items_deco[i] = files
+  return items
 end
 
-# Create random combs
-combs = getRandCombs(makeCombs(items_base, items_deco))
 
-puts "#{combs.length} images will be generated...."
-
-# Generate images
-combs.each_with_index do |comb, i|
-  if (i > CONFIG['max_result_num'])
-    break
+begin
+  # Get config data
+  if File.exists? (CONFIG_FILE_PATH)
+    CONFIG = YAML.load_file(CONFIG_FILE_PATH)
+  else
+    return nil
   end
-  new_path = "./results/#{i}.png"
-  image = createImage(comb)
-  image.write(new_path)
-  puts " SUCCESS #{new_path}"
+  # Get all file names
+  items_base = getFileNames('items_base')
+  items_deco = getFileNames('items_deco')
+  # Create random combs
+  combs = getRandCombs(makeCombs(items_base, items_deco))
+  puts "#{combs.length} images will be generated..."
+  # Generate images
+  combs.each_with_index do |comb, i|
+    if (i > CONFIG['max_result_num'])
+      break
+    end
+    new_path = "./results/#{i}.png"
+    image = createImage(comb)
+    image.write(new_path)
+    puts " SUCCESS #{new_path}"
+  end
+  # Done!
+  puts "All the #{combs.length} images are finally generated!"
+rescue Interrupt
+  puts 'Exited!'
 end
-
-puts "All the #{combs.length} images are finally generated!"
