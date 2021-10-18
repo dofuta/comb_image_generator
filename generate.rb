@@ -37,15 +37,15 @@ def stackImage(base_image, file_name)
   return result
 end
 
-def createImage(combs)
+def createImage(comb)
   # プログレスバー
-  bar = TTY::ProgressBar.new("Generating [:bar]", total: (combs[:items_base].length + combs[:items_deco].length))
-  base_image = MiniMagick::Image.open(combs[:items_base][0])
-  combs[:items_base].drop(1).each do |item|
+  bar = TTY::ProgressBar.new("Generating [:bar]", total: (comb[:items_base].length + comb[:items_deco].length))
+  base_image = MiniMagick::Image.open(comb[:items_base][0])
+  comb[:items_base].drop(1).each do |item|
     base_image = stackImage(base_image, item)
     bar.advance(1)
   end
-  combs[:items_deco].each do |item|
+  comb[:items_deco].each do |item|
     base_image = stackImage(base_image, item)
     bar.advance(1)
   end
@@ -71,6 +71,37 @@ def getFileNames(items_category)
   return items
 end
 
+def generateItemJson(i, comb)
+  tags = []
+  # Generate tags
+  comb[:items_base].each do |item|
+    dirname = File.basename(File.split(item).first)
+    key = File.extname(dirname)[1..-1]
+    tags << {
+      key: key,
+      value: File.basename(File.basename(item), ".png")
+    }
+  end
+  comb[:items_deco].each do |item|
+    dirname = File.basename(File.split(item).first)
+    key = File.extname(dirname)[1..-1]
+    tags << {
+      key: key,
+      value: File.basename(File.basename(item), ".png")
+    }
+  end
+  result = {
+      id: "#{format("%06d", i)}",
+      tags: tags
+  }
+  return result
+end
+
+def generateJsonFile(array)
+  File.open("results.json","w") do |file|
+    file.puts(JSON.generate(array))
+  end
+end
 
 begin
   # Get config data
@@ -84,19 +115,25 @@ begin
   items_deco = getFileNames('items_deco')
   # Create random combs
   combs = getRandCombs(makeCombs(items_base, items_deco))
-  puts "#{combs.length} images will be generated..."
-  # Generate images
+  puts "#{combs.length <= CONFIG['max_result_num'] ? combs.length : CONFIG['max_result_num']} images will be generated..."
+  # Generate images with tags
+  jsons = []
   combs.each_with_index do |comb, i|
-    if (i > CONFIG['max_result_num'])
+    if (i >= CONFIG['max_result_num'])
       break
     end
-    new_path = "./results/#{i}.png"
+    new_path = "./results/#{ CONFIG['generated_filename']}#{format("%06d", i)}[#{format("%06d", i)}].png"
+    # Generate json tags
+    jsons << generateItemJson(i, comb)
+    # Generate image
     image = createImage(comb)
     image.write(new_path)
     puts " SUCCESS #{new_path}"
   end
+  # Generate JSON
+  generateJsonFile(jsons)
   # Done!
-  puts "All the #{combs.length} images are finally generated!"
+  puts "All the #{combs.length <= CONFIG['max_result_num'] ? combs.length : CONFIG['max_result_num']} images are finally generated!"
 rescue Interrupt
   puts 'Exited!'
 end

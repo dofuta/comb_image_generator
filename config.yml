@@ -1,14 +1,15 @@
-max_result_num: 10000
+max_result_num: 2
 assets_path: "./assets"
+generated_filename: "Dino_"
 files:
   items_base:
-    - "1_背景"
-    - "2_体色"
-    - "3_背びれ"
-    - "4_服"
+    - "1_背景.color"
+    - "2_体色.item"
+    - "3_背びれ.item"
+    - "4_服.item"
   items_deco:
-    - "5_目"
-    - "6_口"
-    - "7_アイウェア"
-    - "8_靴"
-    - "9_帽子"
+    - "5_目.item"
+    - "6_口.item"
+    - "7_アイウェア.item"
+    - "8_靴.item"
+    - "9_帽子.item"

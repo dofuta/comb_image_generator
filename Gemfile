@@ -12,3 +12,6 @@ gem 'yaml'
 gem 'tty-prompt'
 gem 'tty-progressbar'
 gem 'tty-table'
+
+# json tool
+gem 'json'
